@@ -1,0 +1,4 @@
+nginx/logs
+mongo/db
+mongo/configdb
+node_modules
