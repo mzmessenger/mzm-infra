@@ -62,4 +62,6 @@ execSync(
   `${mzmShell} --eval 'db.rooms.createIndex({ name: 1 }, { unique: true })'`
 )
 execSync(`${mzmShell} --eval 'db.enter.createIndex({ userId: 1 })'`)
-execSync(`${mzmShell} --eval 'db.users.createIndex({ account: 1 })'`)
+execSync(
+  `${mzmShell} --eval 'db.users.createIndex({ account: 1 }, { unique: true })'`
+)
