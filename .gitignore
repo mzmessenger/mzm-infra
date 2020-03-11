@@ -4,3 +4,4 @@ mongo/configdb
 mongo-test/db
 mongo-test/configdb
 node_modules
+cache
