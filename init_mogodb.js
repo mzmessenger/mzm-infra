@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const { MongoClient } = require('mongodb')
 
 /**
  * ./init_mogodb.js --password=example --user=xxx --user_password=yyy --port=27018
@@ -24,44 +25,42 @@ const { password, user, user_password, port } = require('yargs')
     default: '27017'
   }).argv
 
-function createMongoShell(dbname) {
-  return `mongo ${dbname} --port '${port}' -uroot -p ${password} --authenticationDatabase="admin"`
+const createUser = async (client, dbname) => {
+  try {
+    await client.db(dbname).removeUser(user)
+  } catch (e) {}
+
+  await client.db(dbname).addUser(user, user_password, {
+    roles: ['readWrite']
+  })
 }
 
-function createUser(dbname) {
-  let existUser = true
-  const mongoShell = createMongoShell(dbname)
-  try {
-    execSync(`${mongoShell} --eval 'db.getUsers()' | grep user | grep ${user}`)
-  } catch (e) {
-    if (e.stderr.toString() === '') {
-      existUser = false
+const main = async () => {
+  const client = await MongoClient.connect(
+    `mongodb://root:${password}@localhost?authenticationDatabase="admin"`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     }
-  }
+  )
 
-  try {
-    if (!existUser) {
-      execSync(
-        `${mongoShell} --eval 'db.createUser({ user: "${user}", pwd: "${user_password}", roles: [] })'`
-      )
-    }
-    execSync(
-      `${mongoShell} --eval 'db.grantRolesToUser("${user}", ["readWrite"])'`
-    )
-  } catch (e) {
-    console.error(`${e.toString()}\n\n${e.stdout.toString()}`)
-  }
+  await createUser(client, 'mzm')
+  await createUser(client, 'auth')
+
+  // index
+  await client
+    .db('mzm')
+    .collection('rooms')
+    .createIndex({ name: 1 }, { unique: true })
+
+  await client.db('mzm').collection('enter').createIndex({ userId: 1 })
+
+  await client
+    .db('mzm')
+    .collection('users')
+    .createIndex({ account: 1 }, { unique: true })
+
+  client.close()
 }
 
-createUser('mzm')
-createUser('auth')
-
-const mzmShell = createMongoShell('mzm')
-// index
-execSync(
-  `${mzmShell} --eval 'db.rooms.createIndex({ name: 1 }, { unique: true })'`
-)
-execSync(`${mzmShell} --eval 'db.enter.createIndex({ userId: 1 })'`)
-execSync(
-  `${mzmShell} --eval 'db.users.createIndex({ account: 1 }, { unique: true })'`
-)
+main().catch(console.error)

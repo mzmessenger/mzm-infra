@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
+    "mongodb": "^3.5.5",
     "yargs": "^13.2.2"
   }
 }

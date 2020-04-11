@@ -1,25 +1,38 @@
 # mzm-infra
 
-[frontend](https://github.com/koh110/mzm-frontend)
-[backend](https://github.com/koh110/mzm-backend)
-[socket](https://github.com/koh110/mzm-socket)
-[auth](https://github.com/koh110/mzm-auth)
+## Get started
 
-Get started
+start middleware
+
+```bash
+# infra
+$ export HOST_IP=`{{youripaddress}}` && docker-compose up
+
+# init db
+$ npm install
+$ ./init_mogodb.js --password=example --user=mzm --user_password={{password}} --port=27018
+```
+
+start components
+
+[frontend](https://github.com/koh110/mzm-frontend)
+
+[backend](https://github.com/koh110/mzm-backend)
+
+[socket](https://github.com/koh110/mzm-socket)
+
+[auth](https://github.com/koh110/mzm-auth)
 
 ```bash
 # start frontend
-cd mzm-frontend && npm start
+$ cd mzm-frontend && npm start
 
 # start backend
-cd mzm-backend && npm start
+$ cd mzm-backend && npm start
 
 # start socket
-cd mzm-socket && npm start
+$ cd mzm-socket && npm start
 
 # start auth
-cd mzm-auth && npm start
-
-# infra
-$ export HOST_IP=`ifconfig en0 | grep inet | grep -v inet6 | awk '{print $2}'` && docker-compose up
+$ cd mzm-auth && npm start
 ```
