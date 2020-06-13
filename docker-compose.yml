@@ -11,7 +11,7 @@ services:
       - ./nginx/logs/:/var/log/nginx/
       - ./nginx/cache/:/var/cache/nginx/
   mongo:
-    image: mongo:4.0
+    image: mongo:4.2
     ports:
       - 27017:27017
     environment:
@@ -25,3 +25,18 @@ services:
     image: redis:6
     ports:
       - 6379:6379
+  elasticsearch:
+    build:
+      context: ./elasticsearch
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - 'ES_JAVA_OPTS=-Xms512m -Xmx512m'
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
