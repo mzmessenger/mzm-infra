@@ -2,10 +2,9 @@
 const { MongoClient } = require('mongodb')
 
 /**
- * ./init_mogodb.js --password=example --user=xxx --user_password=yyy --port=27018
+ * ./init_mogodb.js --password=example --user=mzm --user_password=xxx --port=27018
  */
 
-const { execSync } = require('child_process')
 const { password, user, user_password, port } = require('yargs')
   .option('password', {
     describe: 'root password',
@@ -25,27 +24,28 @@ const { password, user, user_password, port } = require('yargs')
     default: '27017'
   }).argv
 
-const createUser = async (client, dbname) => {
+const createUser = async (client, dbname, user, password) => {
   try {
     await client.db(dbname).removeUser(user)
   } catch (e) {}
 
-  await client.db(dbname).addUser(user, user_password, {
+  console.log(`create user: ${user} to ${dbname}`)
+  await client.db(dbname).addUser(user, password, {
     roles: ['readWrite']
   })
 }
 
 const main = async () => {
   const client = await MongoClient.connect(
-    `mongodb://root:${password}@localhost?authenticationDatabase="admin"`,
+    `mongodb://root:${password}@localhost`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true
     }
   )
 
-  await createUser(client, 'mzm')
-  await createUser(client, 'auth')
+  await createUser(client, 'mzm', user, user_password)
+  await createUser(client, 'auth', user, user_password)
 
   // index
   await client

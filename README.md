@@ -6,7 +6,7 @@ start middleware
 
 ```bash
 # infra
-$ export HOST_IP=`{{youripaddress}}` && docker-compose up
+$ docker-compose up
 
 # init db
 $ npm install
